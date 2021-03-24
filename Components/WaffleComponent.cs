@@ -18,7 +18,7 @@ namespace Waffle
         /// Constructor.
         /// </summary>
         public WaffleComponent()
-          : base("Waffle", "Wffl",
+          : base("Waffle", "Wfl",
               "Estructura de waffle de una superficie/polisuperficie cerrada.",
               "Intersect", "Shape")
         {
@@ -102,7 +102,7 @@ namespace Waffle
             if (slcDist <= 0)
             {
                 if (lang == "es")
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La distancia de separación de las rebanadas debe ser mayor que 0.");
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La distancia entre las rebanadas debe ser mayor que 0.");
                 else
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Distance between slices must be grater than 0.");
                 return;
@@ -113,6 +113,14 @@ namespace Waffle
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El espesor del material debe ser mayor que 0.");
                 else
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Material thickness must be greater than 0.");
+                return;
+            }
+            if (slcDist <= thkns)
+            {
+                if (lang == "es")
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El espesor del material no puede ser más grande que la distancia entre las rebanadas.");
+                else
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Material thickness can't be greater than distance between slices.");
                 return;
             }
             /*
@@ -189,8 +197,6 @@ namespace Waffle
                         grvsLnX[i].Add(line);
                         grvsLnY[j].Add(line);
                     }
-
-
                 }
             }
             /*
@@ -228,10 +234,21 @@ namespace Waffle
                 /*
                  * Se obtiene el plano de orientación de la rebanada.
                  */
-                BoundingBox bboxX = crvsX[i].GetBoundingBox(false);
-                plnYZ = Plane.WorldYZ;
-                plnYZ.Origin = bboxX.Center;
-                plnsYZ[i] = plnYZ;
+                try
+                {
+                    BoundingBox bboxX = crvsX[i].GetBoundingBox(false);
+                    plnYZ = Plane.WorldYZ;
+                    plnYZ.Origin = bboxX.Center;
+                    plnsYZ[i] = plnYZ;
+                }
+                catch (NullReferenceException)
+                {
+                    if (lang == "es")
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Error.");
+                    else
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Error.");
+                    return;
+                }
             }
             /*
              * Se crean las ranuras de las rebanadas en Y.
