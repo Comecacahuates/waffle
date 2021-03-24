@@ -49,7 +49,9 @@ namespace Waffle
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddCurveParameter("Rebanadas X", "X", "Rebanadas en la dirección de X.", GH_ParamAccess.list);
+            pManager.AddPlaneParameter("Planos YZ", "PYZ", "Planos para las rebanadas en la dirección X.", GH_ParamAccess.list);
             pManager.AddCurveParameter("Rebanadas Y", "Y", "Rebanadas en la dirección de Y.", GH_ParamAccess.list);
+            pManager.AddPlaneParameter("Planos XZ", "PXZ", "Planos para las rebanadas en la dirección Y.", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -167,9 +169,10 @@ namespace Waffle
                 }
             }
             /*
-             * Se crean las las ranuras de las rebanadas en X.
+             * Se crean las las ranuras de las rebanadas en X y los planos de orientación.
              */
             Curve[] crvsX = new Curve[slcsX.Count];
+            Plane[] plnsYZ = new Plane[slcsX.Count];
             double tolerance = 0.001;
             for (int i = 0; i < slcsX.Count; i++)
             {
@@ -183,10 +186,13 @@ namespace Waffle
                     Rectangle3d grv = new Rectangle3d(pln, intvlX, intvlY);
                     grvsX.Add(grv.ToNurbsCurve());
                 }
-                Plane pln2;
-                slcsX[i].TryGetPlane(out pln2, tolerance);
+                /*
+                 * Se calcula la diferencia de la rebanada y las ranuras.
+                 */
+                Plane plnYZ;
+                slcsX[i].TryGetPlane(out plnYZ, tolerance);
                 grvsX.Add(slcsX[i]);
-                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsX, pln2, false, tolerance);
+                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsX, plnYZ, false, tolerance);
                 double maxLength = 0.0;
                 for (int j = 0; j < crvBoolReg.RegionCount; j++)
                     if (maxLength < crvBoolReg.RegionCurves(j)[0].GetLength())
@@ -194,11 +200,19 @@ namespace Waffle
                         maxLength = crvBoolReg.RegionCurves(j)[0].GetLength();
                         crvsX[i] = crvBoolReg.RegionCurves(j)[0];
                     }
+                /*
+                 * Se obtiene el plano de orientación de la rebanada.
+                 */
+                BoundingBox bboxX = crvsX[i].GetBoundingBox(false);
+                plnYZ = Plane.WorldYZ;
+                plnYZ.Origin = bboxX.Center;
+                plnsYZ[i] = plnYZ;
             }
             /*
              * Se crean las ranuras de las rebanadas en X.
              */
             Curve[] crvsY = new Curve[slcsY.Count];
+            Plane[] plnsXZ = new Plane[slcsX.Count];
             for (int i = 0; i < slcsY.Count; i++)
             {
                 List<Curve> grvsY = new List<Curve>();
@@ -215,10 +229,10 @@ namespace Waffle
                  * Se utiliza el método `CreateBooleanRegions` porque el método `CreateBooleanDifference`.
                  * TODO: Ver si se puede hacer la diferencia booleana de otra manera.
                  */
-                Plane pln2;
-                slcsY[i].TryGetPlane(out pln2, tolerance);
+                Plane plnXZ;
+                slcsY[i].TryGetPlane(out plnXZ, tolerance);
                 grvsY.Add(slcsY[i]);
-                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsY, pln2, false, tolerance);
+                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsY, plnXZ, false, tolerance);
                 double maxLength = 0.0;
                 for (int j = 0; j < crvBoolReg.RegionCount; j++)
                     if (maxLength < crvBoolReg.RegionCurves(j)[0].GetLength())
@@ -226,12 +240,21 @@ namespace Waffle
                         maxLength = crvBoolReg.RegionCurves(j)[0].GetLength();
                         crvsY[i] = crvBoolReg.RegionCurves(j)[0];
                     }
+                /*
+                 * Se obtiene el plano de orientación de la rebanada.
+                 */
+                BoundingBox bboxY = crvsY[i].GetBoundingBox(false);
+                plnXZ = Plane.WorldZX;
+                plnXZ.Origin = bboxY.Center;
+                plnsXZ[i] = plnXZ;
             }
             /*
              * Se asignan los valores a los parámetros de salida.
              */
             DA.SetDataList(0, crvsX);
-            DA.SetDataList(1, crvsY);
+            DA.SetDataList(1, plnsYZ);
+            DA.SetDataList(2, crvsY);
+            DA.SetDataList(3, plnsXZ);
         }
 
         /// <summary>
