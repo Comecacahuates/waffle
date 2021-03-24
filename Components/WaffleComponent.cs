@@ -7,28 +7,19 @@ using Rhino.Geometry.Intersect;
 using System;
 using System.Collections.Generic;
 
-// In order to load the result of this wizard, you will also need to
-// add the output bin/ folder of this project to the list of loaded
-// folder in Grasshopper.
-// You can use the _GrasshopperDeveloperSettings Rhino command for that.
-
 namespace Waffle
 {
     /// <summary>
-    /// Componente que genera una estructura de Waffle de un modelo 3D.
+    /// Componente que genera una estructura de Waffle de una superficie/polisuperficie cerrada.
     /// </summary>
     public class WaffleComponent : GH_Component
     {
         /// <summary>
-        /// Each implementation of GH_Component must provide a public 
-        /// constructor without any arguments.
-        /// Category represents the Tab in which the component will appear, 
-        /// Subcategory the panel. If you use non-existing tab or panel names, 
-        /// new tabs/panels will automatically be created.
+        /// Constructor.
         /// </summary>
         public WaffleComponent()
           : base("Waffle", "Wffl",
-              "Waffle de objeto 3D.",
+              "Estructura de waffle de una superficie/polisuperficie cerrada.",
               "Intersect", "Shape")
         {
         }
@@ -55,23 +46,22 @@ namespace Waffle
         }
 
         /// <summary>
-        /// This is the method that actually does the work.
+        /// Crear la estructura de waffle.
         /// </summary>
-        /// <param name="DA">The DA object can be used to retrieve data from input parameters and 
-        /// to store data in output parameters.</param>
+        /// <param name="DA">Acceso a los parámetros de entrada y salida.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             Brep brep = new Brep();
-            double distance = 1;
-            double thickness = 1;
+            double slcDist = 0;
+            double thkns = 0;
             /*
              * Se obtienen los parámetros de entrada.
              */
             if (!DA.GetData(0, ref brep))
                 return;
-            if (!DA.GetData(1, ref distance))
+            if (!DA.GetData(1, ref slcDist))
                 return;
-            if (!DA.GetData(2, ref thickness))
+            if (!DA.GetData(2, ref thkns))
                 return;
             /*
              * Se validan los parámetros de entrada.
@@ -81,11 +71,12 @@ namespace Waffle
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El brep debe ser sólido.");
                 return;
             }
-            if (distance <= 0)
+            if (slcDist <= 0)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La distancia de separación de las rebanadas debe ser mayor que 0.");
+                return;
             }
-            if (thickness <= 0)
+            if (thkns <= 0)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El grosor del material debe ser mayor que 0.");
                 return;
@@ -106,30 +97,30 @@ namespace Waffle
             double midX = minX + dX / 2.0;    // Coordenada X media.
             double midY = minY + dY / 2.0;    // Coordenada Y media.
             /*
-             * Se obtienen las rebanadas en X.
+             * Se generan las rebanadas en X.
              */
-            int numDivX = (int)Math.Floor(dX / distance);
-            minX += (dX - numDivX * distance) / 2.0;
-            maxX = minX + numDivX * distance;
+            int numDivX = (int)Math.Floor(dX / slcDist);
+            minX += (dX - numDivX * slcDist) / 2.0;
+            maxX = minX + numDivX * slcDist;
             Plane[] plnsX = new Plane[numDivX + 1];
             for (int i = 0; i < plnsX.Length; i++)
             {
-                Point3d p = new Point3d(minX + distance * i, 0, 0);
+                Point3d p = new Point3d(minX + slcDist * i, 0, 0);
                 plnsX[i] = new Plane(p, Vector3d.XAxis);
             }
             List<Curve> slcsX = new List<Curve>(); // Rebanadas en X.
             foreach (Plane pln in plnsX)
                 slcsX.AddRange(Brep.CreateContourCurves(brep, pln));
             /*
-             * Se obtienen las rebanadas en Y.
+             * Se generan las rebanadas en Y.
              */
-            int numDivY = (int)Math.Floor(dY / distance);
-            minY += (dY - numDivY * distance) / 2.0;
-            maxY = minY + numDivY * distance;
+            int numDivY = (int)Math.Floor(dY / slcDist);
+            minY += (dY - numDivY * slcDist) / 2.0;
+            maxY = minY + numDivY * slcDist;
             Plane[] plnsY = new Plane[numDivY + 1];
             for (int i = 0; i < plnsY.Length; i++)
             {
-                Point3d p = new Point3d(0, minY + distance * i, 0);
+                Point3d p = new Point3d(0, minY + slcDist * i, 0);
                 plnsY[i] = new Plane(p, -Vector3d.YAxis);
             }
             List<Curve> slcsY = new List<Curve>();    // Rebanadas en Y.
@@ -181,13 +172,13 @@ namespace Waffle
                 {
                     Point3d o = grvLn.PointAt(0.5);
                     Plane pln = new Plane(o, Vector3d.YAxis, Vector3d.ZAxis);
-                    Interval intvlX = new Interval(-thickness / 2.0, thickness / 2.0);
+                    Interval intvlX = new Interval(-thkns / 2.0, thkns / 2.0);
                     Interval intvlY = new Interval(0, grvLn.Length);
                     Rectangle3d grv = new Rectangle3d(pln, intvlX, intvlY);
                     grvsX.Add(grv.ToNurbsCurve());
                 }
                 /*
-                 * Se calcula la diferencia de la rebanada y las ranuras.
+                 * Se calcula la diferencia entre la rebanada y las ranuras.
                  */
                 Plane plnYZ;
                 slcsX[i].TryGetPlane(out plnYZ, tolerance);
@@ -209,7 +200,7 @@ namespace Waffle
                 plnsYZ[i] = plnYZ;
             }
             /*
-             * Se crean las ranuras de las rebanadas en X.
+             * Se crean las ranuras de las rebanadas en Y.
              */
             Curve[] crvsY = new Curve[slcsY.Count];
             Plane[] plnsXZ = new Plane[slcsX.Count];
@@ -220,14 +211,13 @@ namespace Waffle
                 {
                     Point3d o = grvLn.PointAt(0.5);
                     Plane pln = new Plane(o, Vector3d.XAxis, -Vector3d.ZAxis);
-                    Interval intvlX = new Interval(-thickness / 2.0, thickness / 2.0);
+                    Interval intvlX = new Interval(-thkns / 2.0, thkns / 2.0);
                     Interval intvlY = new Interval(0, grvLn.Length);
                     Rectangle3d grv = new Rectangle3d(pln, intvlX, intvlY);
                     grvsY.Add(grv.ToNurbsCurve());
                 }
                 /*
                  * Se utiliza el método `CreateBooleanRegions` porque el método `CreateBooleanDifference`.
-                 * TODO: Ver si se puede hacer la diferencia booleana de otra manera.
                  */
                 Plane plnXZ;
                 slcsY[i].TryGetPlane(out plnXZ, tolerance);
@@ -244,8 +234,7 @@ namespace Waffle
                  * Se obtiene el plano de orientación de la rebanada.
                  */
                 BoundingBox bboxY = crvsY[i].GetBoundingBox(false);
-                plnXZ = Plane.WorldZX;
-                plnXZ.Origin = bboxY.Center;
+                plnXZ = new Plane(bboxY.Center, Vector3d.XAxis, -Vector3d.ZAxis);
                 plnsXZ[i] = plnXZ;
             }
             /*
@@ -257,28 +246,8 @@ namespace Waffle
             DA.SetDataList(3, plnsXZ);
         }
 
-        /// <summary>
-        /// Provides an Icon for every component that will be visible in the User Interface.
-        /// Icons need to be 24x24 pixels.
-        /// </summary>
-        protected override System.Drawing.Bitmap Icon
-        {
-            get
-            {
-                // You can add image files to your project resources and access them like this:
-                //return Resources.IconForThisComponent;
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Each component must have a unique Guid to identify it. 
-        /// It is vital this Guid doesn't change otherwise old ghx files 
-        /// that use the old ID will partially fail during loading.
-        /// </summary>
-        public override Guid ComponentGuid
-        {
-            get { return new Guid("1e3c76b8-023d-4760-9c3f-97c2665c544a"); }
-        }
+        public override GH_Exposure Exposure => GH_Exposure.primary | GH_Exposure.obscure;
+        protected override System.Drawing.Bitmap Icon => Properties.Resources.WaffleComponent_24x24;
+        public override Guid ComponentGuid => new Guid("1e3c76b8-023d-4760-9c3f-97c2665c544a");
     }
 }
