@@ -4,9 +4,6 @@ using System.Drawing;
 
 namespace Waffle
 {
-    /// <summary>
-    /// Componente que genera una estructura de Waffle de un modelo 3D.
-    /// </summary>
     public class WaffleInfo : GH_AssemblyInfo
     {
         public override string Name
