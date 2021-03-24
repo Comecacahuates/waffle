@@ -22,6 +22,9 @@ namespace Waffle
               "Estructura de waffle de una superficie/polisuperficie cerrada.",
               "Intersect", "Shape")
         {
+            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            if (lang != "es")
+                this.Description = "Waffle structure from closed brep.";
         }
 
         /// <summary>
@@ -29,9 +32,19 @@ namespace Waffle
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddBrepParameter("Brep", "B", "Objeto a rebanar.", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Distancia", "D", "Distancia entre las rebanadas.", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Grosor", "T", "Grosor del material", GH_ParamAccess.item);
+            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            if (lang == "es")
+            {
+                pManager.AddBrepParameter("Brep", "B", "Superficie/polisuperficie cerrada a rebanar.", GH_ParamAccess.item);
+                pManager.AddNumberParameter("Distancia", "D", "Distancia entre las rebanadas.", GH_ParamAccess.item);
+                pManager.AddNumberParameter("Espesor", "T", "Espesor del material.", GH_ParamAccess.item);
+            }
+            else
+            {
+                pManager.AddBrepParameter("Brep", "B", lang + " Brep to be sliced.", GH_ParamAccess.item);
+                pManager.AddNumberParameter("Distance", "D", "Distance between slices.", GH_ParamAccess.item);
+                pManager.AddNumberParameter("Thickness", "T", "Material thickness.", GH_ParamAccess.item);
+            }
         }
 
         /// <summary>
@@ -39,10 +52,21 @@ namespace Waffle
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddCurveParameter("Rebanadas X", "X", "Rebanadas en la dirección de X.", GH_ParamAccess.list);
-            pManager.AddPlaneParameter("Planos YZ", "PYZ", "Planos para las rebanadas en la dirección X.", GH_ParamAccess.list);
-            pManager.AddCurveParameter("Rebanadas Y", "Y", "Rebanadas en la dirección de Y.", GH_ParamAccess.list);
-            pManager.AddPlaneParameter("Planos XZ", "PXZ", "Planos para las rebanadas en la dirección Y.", GH_ParamAccess.list);
+            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            if (lang == "es")
+            {
+                pManager.AddCurveParameter("Rebanadas X", "X", "Rebanadas en la dirección de X.", GH_ParamAccess.list);
+                pManager.AddPlaneParameter("Planos YZ", "PYZ", "Planos de orientación para las rebanadas en la dirección X.", GH_ParamAccess.list);
+                pManager.AddCurveParameter("Rebanadas Y", "Y", "Rebanadas en la dirección de Y.", GH_ParamAccess.list);
+                pManager.AddPlaneParameter("Planos XZ", "PXZ", "Planos de orientación para las rebanadas en la dirección Y.", GH_ParamAccess.list);
+            }
+            else
+            {
+                pManager.AddCurveParameter("X slices", "X", "Slices in X direction.", GH_ParamAccess.list);
+                pManager.AddPlaneParameter("YZ planes", "PYZ", "Orientation planes for slices in X direction.", GH_ParamAccess.list);
+                pManager.AddCurveParameter("Y slices", "Y", "Slices in Y direction.", GH_ParamAccess.list);
+                pManager.AddPlaneParameter("XZ planes", "PXZ", "Orientation planes for slices in Y direction.", GH_ParamAccess.list);
+            }
         }
 
         /// <summary>
@@ -51,6 +75,7 @@ namespace Waffle
         /// <param name="DA">Acceso a los parámetros de entrada y salida.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             Brep brep = new Brep();
             double slcDist = 0;
             double thkns = 0;
@@ -68,17 +93,26 @@ namespace Waffle
              */
             if (!brep.IsSolid)
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El brep debe ser sólido.");
+                if (lang == "es")
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La superficie/polisuperficie debe ser sólido.");
+                else
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Brep must be closed.");
                 return;
             }
             if (slcDist <= 0)
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La distancia de separación de las rebanadas debe ser mayor que 0.");
+                if (lang == "es")
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "La distancia de separación de las rebanadas debe ser mayor que 0.");
+                else
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Distance between slices must be grater than 0.");
                 return;
             }
             if (thkns <= 0)
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El grosor del material debe ser mayor que 0.");
+                if (lang == "es")
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "El espesor del material debe ser mayor que 0.");
+                else
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Material thickness must be greater than 0.");
                 return;
             }
             /*

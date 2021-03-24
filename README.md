@@ -8,7 +8,7 @@
 
 + `B` - Superficie/polisuperficie cerrada base.
 + `D` - Distancia entre rebanadas.
-+ `T` - Grosor del material.
++ `T` - Espesor del material.
 
 ### Parámetros de salida ###
 
@@ -23,7 +23,7 @@ El componente Waffle se encuentra en la categoría *Intersect &rarr; Shape*.
 
 ![ubicacion](img/ubicacion.png "Ubicación del componente Waffle")
 
-Cuando se coloca el componente en el lienzo, se deben conectar datos en todos los parámetros de entrada. Si la superficie/polisuperficie que se conecta en no es cerrada, o si la distancia entre rebanadas o el grosor del material son iguales o menores a 0, habrá un error.
+Cuando se coloca el componente en el lienzo, se deben conectar datos en todos los parámetros de entrada. Si la superficie/polisuperficie que se conecta en no es cerrada, o si la distancia entre rebanadas o el espesor del material son iguales o menores a 0, habrá un error.
 
 ![conexiones](img/waffle.png "Conexiones del componente Waffle")
 
