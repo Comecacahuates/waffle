@@ -6,11 +6,12 @@ using Rhino.Geometry;
 using Rhino.Geometry.Intersect;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Waffle
 {
     /// <summary>
-    /// Componente que genera una estructura de Waffle de una superficie/polisuperficie cerrada.
+    /// Componente que genera una estructura de waffle de una superficie/polisuperficie cerrada.
     /// </summary>
     public class WaffleComponent : GH_Component
     {
@@ -22,7 +23,7 @@ namespace Waffle
               "Estructura de waffle de una superficie/polisuperficie cerrada.",
               "Intersect", "Shape")
         {
-            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            string lang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             if (lang != "es")
                 this.Description = "Waffle structure from closed brep.";
         }
@@ -32,7 +33,7 @@ namespace Waffle
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            string lang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             if (lang == "es")
             {
                 pManager.AddBrepParameter("Brep", "B", "Superficie/polisuperficie cerrada a rebanar.", GH_ParamAccess.item);
@@ -52,7 +53,7 @@ namespace Waffle
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            string lang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             if (lang == "es")
             {
                 pManager.AddCurveParameter("Rebanadas X", "X", "Rebanadas en la dirección de X.", GH_ParamAccess.list);
@@ -75,7 +76,7 @@ namespace Waffle
         /// <param name="DA">Acceso a los parámetros de entrada y salida.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            string lang = System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+            string lang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             Brep brep = new Brep();
             double slcDist = 0;
             double thkns = 0;
@@ -244,9 +245,9 @@ namespace Waffle
                 catch (NullReferenceException)
                 {
                     if (lang == "es")
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Error.");
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Intenta con otro valor para la distancia entre rebanadas.");
                     else
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Error.");
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Try a different value for distance between slices.");
                     return;
                 }
             }
@@ -284,9 +285,23 @@ namespace Waffle
                 /*
                  * Se obtiene el plano de orientación de la rebanada.
                  */
-                BoundingBox bboxY = crvsY[i].GetBoundingBox(false);
-                plnXZ = new Plane(bboxY.Center, Vector3d.XAxis, -Vector3d.ZAxis);
-                plnsXZ[i] = plnXZ;
+                try
+                {
+                    BoundingBox bboxY = crvsY[i].GetBoundingBox(false);
+                    plnXZ = new Plane(bboxY.Center, Vector3d.XAxis, Vector3d.ZAxis);
+                    plnsXZ[i] = plnXZ;
+                }
+                catch (NullReferenceException)
+                {
+                    if (lang == "es")
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Intenta con otro valor para la distancia entre rebanadas.");
+                    else
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Try a different value for distance between slices.");
+                    return;
+                }
+                /*
+                 * Se obtiene el plano de orientación de la rebanada.
+                 */
             }
             /*
              * Se asignan los valores a los parámetros de salida.
