@@ -1,5 +1,4 @@
-﻿using Grasshopper;
-using Grasshopper.Kernel;
+﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
@@ -77,9 +76,9 @@ namespace Waffle
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             string lang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
-            Brep brep = new Brep();
-            double slcDist = 0;
-            double thkns = 0;
+            Brep brep = new Brep();    // Superficie/polisuperficie cerrada base.
+            double slcDist = 0.0;      // Distancia entre las rebanadas.
+            double thkns = 0.0;        // Espesor del material.
             /*
              * Se obtienen los parámetros de entrada.
              */
@@ -137,34 +136,32 @@ namespace Waffle
             double maxY = pY.Y;    // Coordenada Y máxima.
             double dX = maxX - minX;    // Dimensión en X.
             double dY = maxY - minY;    // Dimensión en Y.
-            double midX = minX + dX / 2.0;    // Coordenada X media.
-            double midY = minY + dY / 2.0;    // Coordenada Y media.
+            double midX = (maxX + minX) / 2.0;    // Coordenada X media.
+            double midY = (maxY + minY) / 2.0;    // Coordenada Y media.
             /*
              * Se generan las rebanadas en X.
              */
-            int numDivX = (int)Math.Floor(dX / slcDist);
-            minX += (dX - numDivX * slcDist) / 2.0;
-            maxX = minX + numDivX * slcDist;
-            Plane[] plnsX = new Plane[numDivX + 1];
+            int numDivsX = (int)Math.Floor(dX / slcDist);
+            minX += (dX - numDivsX * slcDist) / 2.0;
+            Plane[] plnsX = new Plane[numDivsX + 1];    // Planos para las rebanadas en X.
             for (int i = 0; i < plnsX.Length; i++)
             {
-                Point3d p = new Point3d(minX + slcDist * i, 0, 0);
-                plnsX[i] = new Plane(p, Vector3d.XAxis);
+                plnsX[i] = Plane.WorldYZ;
+                plnsX[i].Origin = new Point3d(minX + slcDist * i, 0, 0);
             }
-            List<Curve> slcsX = new List<Curve>(); // Rebanadas en X.
+            List<Curve> slcsX = new List<Curve>();    // Rebanadas en X.
             foreach (Plane pln in plnsX)
                 slcsX.AddRange(Brep.CreateContourCurves(brep, pln));
             /*
              * Se generan las rebanadas en Y.
              */
-            int numDivY = (int)Math.Floor(dY / slcDist);
-            minY += (dY - numDivY * slcDist) / 2.0;
-            maxY = minY + numDivY * slcDist;
-            Plane[] plnsY = new Plane[numDivY + 1];
+            int numDivsY = (int)Math.Floor(dY / slcDist);
+            minY += (dY - numDivsY * slcDist) / 2.0;
+            Plane[] plnsY = new Plane[numDivsY + 1];    // Planos para las rebanadas en Y.
             for (int i = 0; i < plnsY.Length; i++)
             {
-                Point3d p = new Point3d(0, minY + slcDist * i, 0);
-                plnsY[i] = new Plane(p, -Vector3d.YAxis);
+                plnsY[i] = Plane.WorldZX;
+                plnsY[i].Origin = new Point3d(0, minY + slcDist * i, 0);
             }
             List<Curve> slcsY = new List<Curve>();    // Rebanadas en Y.
             foreach (Plane pln in plnsY)
@@ -181,15 +178,9 @@ namespace Waffle
             const double intersection_tolerance = 0.001;
             const double overlap_tolerance = 0.0;
             for (int i = 0; i < slcsX.Count; i++)
-            {
-                Curve crvX = slcsX[i];
                 for (int j = 0; j < slcsY.Count; j++)
                 {
-                    Curve crvY = slcsY[j];
-                    CurveIntersections ccxs = Intersection.CurveCurve(crvX, crvY, intersection_tolerance, overlap_tolerance);
-                    /*
-                     * Únicamente se consideran los pares de curvas que tengan dos puntos de intersección.
-                     */
+                    CurveIntersections ccxs = Intersection.CurveCurve(slcsX[i], slcsY[j], intersection_tolerance, overlap_tolerance);
                     if (ccxs.Count == 2)
                     {
                         IntersectionEvent ccx0 = ccxs[0];
@@ -199,7 +190,6 @@ namespace Waffle
                         grvsLnY[j].Add(line);
                     }
                 }
-            }
             /*
              * Se crean las las ranuras de las rebanadas en X y los planos de orientación.
              */
