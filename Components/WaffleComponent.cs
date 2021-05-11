@@ -191,7 +191,7 @@ namespace Waffle
                     }
                 }
             /*
-             * Se crean las las ranuras de las rebanadas en X y los planos de orientación.
+             * Se crean las ranuras de las rebanadas en X y los planos de orientación.
              */
             Curve[] crvsX = new Curve[slcsX.Count];
             Plane[] plnsYZ = new Plane[slcsX.Count];
@@ -214,13 +214,13 @@ namespace Waffle
                 Plane plnYZ;
                 slcsX[i].TryGetPlane(out plnYZ, tolerance);
                 grvsX.Add(slcsX[i]);
-                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsX, plnYZ, false, tolerance);
+                CurveBooleanRegions crvBoolRegs = Curve.CreateBooleanRegions(grvsX, plnYZ, false, tolerance);
                 double maxLength = 0.0;
-                for (int j = 0; j < crvBoolReg.RegionCount; j++)
-                    if (maxLength < crvBoolReg.RegionCurves(j)[0].GetLength())
+                for (int j = 0; j < crvBoolRegs.RegionCount; j++)
+                    if (maxLength < crvBoolRegs.RegionCurves(j)[0].GetLength())
                     {
-                        maxLength = crvBoolReg.RegionCurves(j)[0].GetLength();
-                        crvsX[i] = crvBoolReg.RegionCurves(j)[0];
+                        maxLength = crvBoolRegs.RegionCurves(j)[0].GetLength();
+                        crvsX[i] = crvBoolRegs.RegionCurves(j)[0];
                     }
                 /*
                  * Se obtiene el plano de orientación de la rebanada.
@@ -264,13 +264,13 @@ namespace Waffle
                 Plane plnXZ;
                 slcsY[i].TryGetPlane(out plnXZ, tolerance);
                 grvsY.Add(slcsY[i]);
-                CurveBooleanRegions crvBoolReg = Curve.CreateBooleanRegions(grvsY, plnXZ, false, tolerance);
+                CurveBooleanRegions crvBoolRegs = Curve.CreateBooleanRegions(grvsY, plnXZ, false, tolerance);
                 double maxLength = 0.0;
-                for (int j = 0; j < crvBoolReg.RegionCount; j++)
-                    if (maxLength < crvBoolReg.RegionCurves(j)[0].GetLength())
+                for (int j = 0; j < crvBoolRegs.RegionCount; j++)
+                    if (maxLength < crvBoolRegs.RegionCurves(j)[0].GetLength())
                     {
-                        maxLength = crvBoolReg.RegionCurves(j)[0].GetLength();
-                        crvsY[i] = crvBoolReg.RegionCurves(j)[0];
+                        maxLength = crvBoolRegs.RegionCurves(j)[0].GetLength();
+                        crvsY[i] = crvBoolRegs.RegionCurves(j)[0];
                     }
                 /*
                  * Se obtiene el plano de orientación de la rebanada.

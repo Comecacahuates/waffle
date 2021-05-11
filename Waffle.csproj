@@ -56,7 +56,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\OrthogonalWaffleComponent.cs" />
+    <Compile Include="Components\RadialWaffleComponent.cs" />
     <Compile Include="Components\WaffleComponent.cs" />
+    <Compile Include="Geometry\OrthogonalWaffle.cs" />
+    <Compile Include="Geometry\WaffleBase.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
