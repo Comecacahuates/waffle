@@ -1,25 +1,25 @@
-# Waffle para Grasshopper #
+# Waffle para Grasshopper
 
 ---
 
-*Plugin* para Grasshopper que genera una estructura de waffle a partir de una superficie/polisuperficie cerrada.
+_Plugin_ para Grasshopper que genera una estructura de waffle a partir de una superficie/polisuperficie cerrada. Disponible en [https://www.food4rhino.com/app/waffle](https://www.food4rhino.com/app/waffle).
 
-### Parámetros de entrada ###
+### Parámetros de entrada
 
-+ `B` - Superficie/polisuperficie cerrada base.
-+ `D` - Distancia entre rebanadas.
-+ `T` - Espesor del material.
+- `B` - Superficie/polisuperficie cerrada base.
+- `D` - Distancia entre rebanadas.
+- `T` - Espesor del material.
 
-### Parámetros de salida ###
+### Parámetros de salida
 
-+ `X` - Rebanadas en la dirección X.
-+ `PYZ` - Planos YZ de orientación para las rebanadas en la dirección X.
-+ `Y` - Rebanadas en la dirección Y.
-+ `PXZ` - Planos XZ de orientación para las rebanadas en la dirección Y.
+- `X` - Rebanadas en la dirección X.
+- `PYZ` - Planos YZ de orientación para las rebanadas en la dirección X.
+- `Y` - Rebanadas en la dirección Y.
+- `PXZ` - Planos XZ de orientación para las rebanadas en la dirección Y.
 
-## Uso ##
+## Uso
 
-El componente Waffle se encuentra en la categoría *Intersect &rarr; Shape*.
+El componente Waffle se encuentra en la categoría _Intersect &rarr; Shape_.
 
 ![ubicacion](img/ubicacion.png "Ubicación del componente Waffle")
 
