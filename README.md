@@ -1,7 +1,5 @@
 # Waffle para Grasshopper
 
----
-
 _Plugin_ para Grasshopper que genera una estructura de waffle a partir de una superficie/polisuperficie cerrada. Disponible en [https://www.food4rhino.com/app/waffle](https://www.food4rhino.com/app/waffle).
 
 ### Parámetros de entrada
