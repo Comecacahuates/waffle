@@ -8,12 +8,12 @@ namespace Waffle.Domain
 {
     public static class Rounder
     {
-        public static double RoundUp(double value, double step)
+        public static double RoundUp(double value, double step = 1)
         {
             return System.Math.Ceiling(value / step) * step;
         }
 
-        public static double RoundDown(double value, double step)
+        public static double RoundDown(double value, double step = 1)
         {
             return System.Math.Floor(value / step) * step;
         }
