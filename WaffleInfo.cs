@@ -22,5 +22,7 @@ namespace Waffle
         public override Guid Id => new Guid("88911191-c82b-44d4-aa51-72212c223843");
         public override string AuthorName => "Adrián Juárez Monroy | Sicadcam";
         public override string AuthorContact => "comecacahuates@yahoo.com";
+
+        public override string Version => "2.0.0";
     }
 }
