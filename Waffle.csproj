@@ -60,7 +60,11 @@
     <Compile Include="Components\OrthogonalWaffleComponent.cs" />
     <Compile Include="Components\RadialWaffleComponent.cs" />
     <Compile Include="Components\WaffleComponent.cs" />
-    <Compile Include="Domain\Linear\LinearSlicer.cs" />
+    <Compile Include="Domain\Slicing\LinearSlicer.cs" />
+    <Compile Include="Domain\Slicing\LinearSlicingPlanes.cs" />
+    <Compile Include="Domain\Math\IntervalDivider.cs" />
+    <Compile Include="Domain\Math\Rounder.cs" />
+    <Compile Include="Domain\Slicing\Slice.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -80,6 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\WaffleComponent_24x24-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\LinearWaffle\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
