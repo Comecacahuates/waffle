@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Waffle.Domain
+namespace Waffle.Domain.Math
 {
     public static class Rounder
     {
