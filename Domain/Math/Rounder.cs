@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace Waffle.Domain
 {
-    public static class Math
+    public static class Rounder
     {
         public static double RoundUp(double value, double step)
         {
             return System.Math.Ceiling(value / step) * step;
+        }
+
+        public static double RoundDown(double value, double step)
+        {
+            return System.Math.Floor(value / step) * step;
         }
     }
 }
