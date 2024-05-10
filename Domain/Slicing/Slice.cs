@@ -11,7 +11,7 @@ namespace Waffle.Domain.Slicing
     public class Slice
     {
         public Plane Plane { get; private set; }
-        public PolylineCurve[] Curves { get; private set; }
+        public Curve[] Curves { get; private set; }
 
         public Slice(Brep brep, Plane slicingPlane)
         {
@@ -21,10 +21,12 @@ namespace Waffle.Domain.Slicing
 
             for (int i = 0; i < Curves.Length; i++)
             {
-                Curves[i] = curves[i].ToPolyline(
-                    RhinoMath.DefaultDistanceToleranceMillimeters,
-                    RhinoMath.DefaultAngleTolerance,
-                    0.01, 10.0);
+                Curves[i] = curves[i].IsPolyline()
+                    ? curves[i]
+                    : curves[i].ToPolyline(
+                        RhinoMath.DefaultDistanceToleranceMillimeters,
+                        RhinoMath.DefaultAngleTolerance,
+                        0.01, 10.0);
             }
         }
     }
