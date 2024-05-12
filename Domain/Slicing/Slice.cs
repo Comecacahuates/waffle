@@ -25,10 +25,7 @@ namespace Waffle.Domain.Slicing
 
             int curveIndex = 0;
             foreach (Curve eachCurve in Curves)
-            {
-                curves[curveIndex] = eachCurve.DuplicateCurve();
-                curveIndex++;
-            }
+                curves[curveIndex++] = eachCurve.DuplicateCurve();
 
             return new Slice(curves, Plane);
         }
