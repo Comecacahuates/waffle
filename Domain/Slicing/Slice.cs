@@ -13,21 +13,24 @@ namespace Waffle.Domain.Slicing
         public Plane Plane { get; private set; }
         public Curve[] Curves { get; private set; }
 
-        public Slice(Brep brep, Plane slicingPlane)
+        public Slice(Curve[] curves, Plane plane)
         {
-            Plane = slicingPlane;
-            Curve[] curves = Brep.CreateContourCurves(brep, slicingPlane);
-            Curves = new PolylineCurve[curves.Length];
+            Curves = curves;
+            Plane = plane;
+        }
 
-            for (int i = 0; i < Curves.Length; i++)
+        public Slice Duplicate()
+        {
+            Curve[] curves = new Curve[Curves.Length];
+
+            int curveIndex = 0;
+            foreach (Curve eachCurve in Curves)
             {
-                Curves[i] = curves[i].IsPolyline()
-                    ? curves[i]
-                    : curves[i].ToPolyline(
-                        RhinoMath.DefaultDistanceToleranceMillimeters,
-                        RhinoMath.DefaultAngleTolerance,
-                        0.01, 10.0);
+                curves[curveIndex] = eachCurve.DuplicateCurve();
+                curveIndex++;
             }
+
+            return new Slice(curves, Plane);
         }
     }
 }
