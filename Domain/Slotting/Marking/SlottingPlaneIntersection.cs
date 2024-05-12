@@ -1,4 +1,5 @@
 ﻿using Rhino.Geometry;
+using Rhino.Geometry.Intersect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace Waffle.Domain.Slotting
         public Point3d Point { get; private set; }
         public int CurveIndex { get; private set; }
 
-        public SlottingPlaneIntersection(Point3d point, int curveIndex)
+        public SlottingPlaneIntersection(IntersectionEvent intersectionEvent, int curveIndex)
         {
-            Point = point;
+            Point = intersectionEvent.PointA;
             CurveIndex = curveIndex;
         }
     }
