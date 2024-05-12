@@ -8,16 +8,16 @@ using Waffle.Domain.Comparing.Points;
 
 namespace Waffle.Domain.Slotting.Marking
 {
-    internal class SortedSlottingPlaneIntersections : IEnumerable<SlottingPlaneIntersection>
+    internal class SortedSlotPlaneIntersections : IEnumerable<SlotPlaneIntersection>
     {
-        private SortedList<Point3d, SlottingPlaneIntersection> sortedList;
+        private SortedList<Point3d, SlotPlaneIntersection> sortedList;
 
-        public SlottingPlaneIntersection this[int index]
+        public SlotPlaneIntersection this[int index]
         {
             get => sortedList.Values[index];
         }
 
-        public IEnumerator<SlottingPlaneIntersection> GetEnumerator()
+        public IEnumerator<SlotPlaneIntersection> GetEnumerator()
         {
             return sortedList.Values.GetEnumerator();
         }
@@ -29,13 +29,13 @@ namespace Waffle.Domain.Slotting.Marking
 
         public int Count { get => sortedList.Count; }
 
-        public SortedSlottingPlaneIntersections(Plane plane)
+        public SortedSlotPlaneIntersections(Plane plane)
         {
             VCoordinateComparer comparer = new VCoordinateComparer(plane);
-            sortedList = new SortedList<Point3d, SlottingPlaneIntersection>(comparer);
+            sortedList = new SortedList<Point3d, SlotPlaneIntersection>(comparer);
         }
 
-        public void Add(SlottingPlaneIntersection intersection)
+        public void Add(SlotPlaneIntersection intersection)
         {
             sortedList.Add(intersection.Point, intersection);
         }

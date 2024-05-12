@@ -12,7 +12,7 @@ namespace Waffle.Domain.Slotting.Marking
         public int CurveIndex { get; private set; }
         public Line line { get; private set; }
 
-        public SlotMark(SlottingPlaneIntersection startIntersection, SlottingPlaneIntersection endIntersection)
+        public SlotMark(SlotPlaneIntersection startIntersection, SlotPlaneIntersection endIntersection)
         {
             CurveIndex = startIntersection.CurveIndex;
             line = new Line(startIntersection.Point, endIntersection.Point);

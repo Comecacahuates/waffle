@@ -23,7 +23,7 @@ namespace Waffle.Domain.Slotting.Marking
         public SlotMark[] getSlotMarks(Plane slotPlane)
         {
 
-            SortedSlottingPlaneIntersections intersections = getIntersectionsWithSlotPlane(slotPlane);
+            SortedSlotPlaneIntersections intersections = getIntersectionsWithSlotPlane(slotPlane);
 
             if (intersections.Count % 2 != 0)
                 throw new Exception("Odd number of intersections");
@@ -33,9 +33,9 @@ namespace Waffle.Domain.Slotting.Marking
             return slotMarks;
         }
 
-        private SortedSlottingPlaneIntersections getIntersectionsWithSlotPlane(Plane slotPlane)
+        private SortedSlotPlaneIntersections getIntersectionsWithSlotPlane(Plane slotPlane)
         {
-            SortedSlottingPlaneIntersections intersections = new SortedSlottingPlaneIntersections(slotPlane);
+            SortedSlotPlaneIntersections intersections = new SortedSlotPlaneIntersections(slotPlane);
 
             int curveIndex = 0;
             foreach (Curve eachCurve in slice.Curves)
@@ -43,7 +43,7 @@ namespace Waffle.Domain.Slotting.Marking
                 CurveIntersections curveIntersections = Intersection.CurvePlane(eachCurve, slotPlane, RhinoMath.DefaultDistanceToleranceMillimeters);
                 foreach (IntersectionEvent eachIntersectionEvent in curveIntersections)
                 {
-                    SlottingPlaneIntersection intersection = new SlottingPlaneIntersection(eachIntersectionEvent, curveIndex);
+                    SlotPlaneIntersection intersection = new SlotPlaneIntersection(eachIntersectionEvent, curveIndex);
                     intersections.Add(intersection);
                 }
 
@@ -53,7 +53,7 @@ namespace Waffle.Domain.Slotting.Marking
             return intersections;
         }
 
-        private SlotMark[] buildSlotMarks(SortedSlottingPlaneIntersections intersections)
+        private SlotMark[] buildSlotMarks(SortedSlotPlaneIntersections intersections)
         {
             if (intersections.Count % 2 != 0)
                 throw new Exception("Odd number of intersections");
@@ -63,8 +63,8 @@ namespace Waffle.Domain.Slotting.Marking
 
             for (int i = 0; i < slotCount; i++)
             {
-                SlottingPlaneIntersection startIntersection = intersections[i * 2];
-                SlottingPlaneIntersection endIntersection = intersections[i * 2 + 1];
+                SlotPlaneIntersection startIntersection = intersections[i * 2];
+                SlotPlaneIntersection endIntersection = intersections[i * 2 + 1];
 
                 slotMarks[i] = new SlotMark(startIntersection, endIntersection);
             }

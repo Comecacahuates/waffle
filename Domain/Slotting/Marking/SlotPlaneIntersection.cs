@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Waffle.Domain.Slotting.Marking
 {
-    internal class SlottingPlaneIntersection
+    internal class SlotPlaneIntersection
     {
         public Point3d Point { get; private set; }
         public int CurveIndex { get; private set; }
 
-        public SlottingPlaneIntersection(IntersectionEvent intersectionEvent, int curveIndex)
+        public SlotPlaneIntersection(IntersectionEvent intersectionEvent, int curveIndex)
         {
             if (!intersectionEvent.IsPoint)
                 throw new Exception("Intersection event is not a point");
