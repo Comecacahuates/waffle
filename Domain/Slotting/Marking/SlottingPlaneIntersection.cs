@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Waffle.Domain.Slotting
+namespace Waffle.Domain.Slotting.Marking
 {
     internal class SlottingPlaneIntersection
     {
@@ -15,6 +15,9 @@ namespace Waffle.Domain.Slotting
 
         public SlottingPlaneIntersection(IntersectionEvent intersectionEvent, int curveIndex)
         {
+            if (!intersectionEvent.IsPoint)
+                throw new Exception("Intersection event is not a point");
+
             Point = intersectionEvent.PointA;
             CurveIndex = curveIndex;
         }
