@@ -12,6 +12,11 @@ namespace Waffle.Domain.Slotting.Marking
     {
         private SortedList<Point3d, SlottingPlaneIntersection> sortedList;
 
+        public SlottingPlaneIntersection this[int index]
+        {
+            get => sortedList.Values[index];
+        }
+
         public IEnumerator<SlottingPlaneIntersection> GetEnumerator()
         {
             return sortedList.Values.GetEnumerator();
