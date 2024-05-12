@@ -22,6 +22,8 @@ namespace Waffle.Domain.Slotting.Marking
             return GetEnumerator();
         }
 
+        public int Count { get => sortedList.Count; }
+
         public SortedSlottingPlaneIntersections(Plane plane)
         {
             VCoordinateComparer comparer = new VCoordinateComparer(plane);
