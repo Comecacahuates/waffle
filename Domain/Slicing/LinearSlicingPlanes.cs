@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,20 @@ using Waffle.Domain.Math;
 
 namespace Waffle.Domain.Slicing
 {
-    public class LinearSlicingPlanes
+    public class LinearSlicingPlanes : IEnumerable<Plane>
     {
         private Plane[] planes;
-        public int Length => planes.Length;
-        public Plane this[int key]
+        public int Count => planes.Length;
+        public Plane this[int key] { get => planes[key]; }
+
+        public IEnumerator<Plane> GetEnumerator()
         {
-            get => planes[key];
+            foreach (Plane plane in planes) yield return plane;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return planes.GetEnumerator();
         }
 
         public LinearSlicingPlanes(Plane basePlane, Brep brep, double distanceBetweenSlices)
@@ -67,5 +75,7 @@ namespace Waffle.Domain.Slicing
 
             return planes;
         }
+
+
     }
 }
