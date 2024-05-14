@@ -25,40 +25,23 @@ namespace Waffle.Domain.Slicing
             return planes.GetEnumerator();
         }
 
-        public LinearSlicingPlanes(Plane basePlane, Brep brep, double distanceBetweenSlices)
+        public LinearSlicingPlanes(Plane plane, Brep brep, double distanceBetweenSlices)
         {
-            BoundingBox boundingBox = brep.GetBoundingBox(basePlane);
+            BoundingBox boundingBox = brep.GetBoundingBox(plane);
 
-            double minimumW = getMinimumW(boundingBox, basePlane),
+            double minimumW = boundingBox.Min.Z,
                 firstPlaneW = Rounder.RoundUp(minimumW, distanceBetweenSlices);
 
-            double maximumW = getMaximumW(boundingBox, basePlane),
+            double maximumW = boundingBox.Max.Z,
                 lastPlaneW = Rounder.RoundDown(maximumW, distanceBetweenSlices);
 
             Interval wInterval = new Interval(firstPlaneW, lastPlaneW);
 
-            int divisionCount = (int)(wInterval.Length / distanceBetweenSlices);
+            int divisionCount = (int)System.Math.Floor(wInterval.Length / distanceBetweenSlices);
 
             double[] wOfPlanes = IntervalDivider.DivideIntervalInNumbers(wInterval, divisionCount);
 
-            planes = buildPlanes(basePlane, wOfPlanes);
-
-        }
-
-        private double getMinimumW(BoundingBox box, Plane plane)
-        {
-            Transform orientToWorldXY = Transform.ChangeBasis(plane, Plane.WorldXY);
-            Point3d lowestPointRelativeToPlane = orientToWorldXY * box.Min;
-
-            return lowestPointRelativeToPlane.Z;
-        }
-
-        private double getMaximumW(BoundingBox box, Plane plane)
-        {
-            Transform orientToWorldXY = Transform.ChangeBasis(plane, Plane.WorldXY);
-            Point3d highestPointRelativeToPlane = orientToWorldXY * box.Max;
-
-            return highestPointRelativeToPlane.Z;
+            planes = buildPlanes(plane, wOfPlanes);
         }
 
         private Plane[] buildPlanes(Plane basePlane, double[] wOfPlanes)
