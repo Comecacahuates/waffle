@@ -13,7 +13,7 @@ namespace Waffle.Domain.Slicing
     {
         private Plane[] planes;
         public int Count => planes.Length;
-        public Plane this[int key] { get => planes[key]; }
+        public Plane this[int key] => planes[key];
 
         public IEnumerator<Plane> GetEnumerator()
         {
@@ -35,30 +35,40 @@ namespace Waffle.Domain.Slicing
             double maximumW = boundingBox.Max.Z,
                 lastPlaneW = Rounder.RoundDown(maximumW, distanceBetweenSlices);
 
-            Interval wInterval = new Interval(firstPlaneW, lastPlaneW);
+            Interval wCoordinatesInterval = new Interval(firstPlaneW, lastPlaneW);
 
-            int divisionCount = (int)System.Math.Floor(wInterval.Length / distanceBetweenSlices);
+            int divisionCount = (int)System.Math.Floor(wCoordinatesInterval.Length / distanceBetweenSlices);
 
-            double[] wOfPlanes = IntervalDivider.DivideIntervalInNumbers(wInterval, divisionCount);
+            Point3d[] planeOrigins = buildPlaneOrigins(plane, wCoordinatesInterval, divisionCount);
 
-            planes = buildPlanes(plane, wOfPlanes);
+            planes = buildPlanes(plane, planeOrigins);
         }
 
-        private Plane[] buildPlanes(Plane basePlane, double[] wOfPlanes)
+        private Point3d[] buildPlaneOrigins(Plane plane, Interval wCoordinatesInterval, int divisionCount)
         {
-            int planeCount = wOfPlanes.Length;
-            Plane[] planes = new Plane[planeCount];
+            double[] wCoordinates = IntervalDivider.DivideIntervalInNumbers(wCoordinatesInterval, divisionCount);
+            Point3d[] planeOrigins = new Point3d[wCoordinates.Length];
 
-            for (int i = 0; i < planeCount; i++)
+            int index = 0;
+            foreach (double eachWCoordinate in wCoordinates)
+                planeOrigins[index++] = plane.PointAt(0, 0, eachWCoordinate);
+
+            return planeOrigins;
+        }
+
+        private Plane[] buildPlanes(Plane basePlane, Point3d[] planeOrigins)
+        {
+            Plane[] planes = new Plane[planeOrigins.Length];
+
+            int index = 0;
+            foreach (Point3d eachPlaneOrigin in planeOrigins)
             {
-                double eachW = wOfPlanes[i];
-                Point3d origin = basePlane.PointAt(0, 0, eachW);
-                planes[i] = new Plane(origin, basePlane.Normal);
+                Plane plane = basePlane.Clone();
+                plane.Origin = eachPlaneOrigin;
+                planes[index++] = plane;
             }
 
             return planes;
         }
-
-
     }
 }
