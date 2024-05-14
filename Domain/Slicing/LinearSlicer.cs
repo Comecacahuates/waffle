@@ -19,11 +19,11 @@ namespace Waffle.Domain.Slicing
             int sliceCount = slicingPlanes.Count;
             Slice[] slices = new Slice[sliceCount];
 
-            int sliceIndex = 0;
+            int index = 0;
             foreach (Plane eachPlane in slicingPlanes)
             {
                 Curve[] sliceCourves = getSliceCourves(brep, eachPlane);
-                slices[sliceIndex++] = new Slice(sliceCourves, eachPlane);
+                slices[index++] = new Slice(sliceCourves, eachPlane);
             }
         }
 
@@ -32,9 +32,9 @@ namespace Waffle.Domain.Slicing
             Curve[] contourCurves = Brep.CreateContourCurves(brep, plane);
             Curve[] Curves = new Curve[contourCurves.Length];
 
-            int curveIndex = 0;
+            int index = 0;
             foreach (Curve eachContourCurve in contourCurves)
-                Curves[curveIndex++] = convertToPolyline(eachContourCurve);
+                Curves[index++] = convertToPolyline(eachContourCurve);
 
             return Curves;
         }
