@@ -1,38 +1,38 @@
-# Waffle para Grasshopper
+# Waffle for Grasshopper
 
-_Plugin_ para Grasshopper que genera una estructura de waffle a partir de una superficie/polisuperficie cerrada. Disponible en [https://www.food4rhino.com/app/waffle](https://www.food4rhino.com/app/waffle).
+Grasshopper plugin that generates a waffle structure from a closed surface/polysurface. Available at [https://www.food4rhino.com/app/waffle](https://www.food4rhino.com/app/waffle).
 
-### Parámetros de entrada
+### Input Parameters
 
-- `B` - Superficie/polisuperficie cerrada base.
-- `D` - Distancia entre rebanadas.
-- `T` - Espesor del material.
+- `B` - Closed brep.
+- `D` - Distance between slices.
+- `T` - Material thickness.
 
-### Parámetros de salida
+### Output Parameters
 
-- `X` - Rebanadas en la dirección X.
-- `PYZ` - Planos YZ de orientación para las rebanadas en la dirección X.
-- `Y` - Rebanadas en la dirección Y.
-- `PXZ` - Planos XZ de orientación para las rebanadas en la dirección Y.
+- `X` - Slices in the X direction.
+- `PYZ` - YZ orientation planes for slices in the X direction.
+- `Y` - Slices in the Y direction.
+- `PXZ` - XZ orientation planes for slices in the Y direction.
 
-## Uso
+## Usage
 
-El componente Waffle se encuentra en la categoría _Intersect &rarr; Shape_.
+The Waffle component is located in the _Intersect &rarr; Shape_ category.
 
-![ubicacion](img/ubicacion.png "Ubicación del componente Waffle")
+![location](img/ubicacion.png "Waffle component location")
 
-Cuando se coloca el componente en el lienzo, se deben conectar datos en todos los parámetros de entrada. Si la superficie/polisuperficie que se conecta en no es cerrada, o si la distancia entre rebanadas o el espesor del material son iguales o menores a 0, habrá un error.
+When the component is placed on the canvas, data must be connected to all input parameters. If the surface/polysurface connected is not closed, or if the distance between slices or material thickness are equal to or less than 0, an error will occur.
 
-![conexiones](img/waffle.png "Conexiones del componente Waffle")
+![connections](img/waffle.png "Waffle component connections")
 
-**Nota**: Si la distancia entre rebanadas es muy pequeña respecto al tamaño de la superficie/polisuperficie, el cómputo se volverá muy complejo y Rhino podría no responder.
+**Note**: If the distance between slices is very small relative to the size of the surface/polysurface, the computation will become very complex and Rhino may become unresponsive.
 
-![brep](img/brep-original.png "Superficie original")
+![brep](img/brep-original.png "Original surface")
 
-![rebanadas-x](img/brep-rebanadas-x.png "Rebanadas en la dirección X")
+![slices-x](img/brep-rebanadas-x.png "Slices in the X direction")
 
-![rebanadas-y](img/brep-rebanadas-y.png "Rebanadas en la dirección Y")
+![slices-y](img/brep-rebanadas-y.png "Slices in the Y direction")
 
-Cada plano de orientación se encuentra en el centro de su respectiva rebanada, y estos se pueden usar para reorientar las rebanadas y usarlas para maquinado CNC, por ejemplo.
+Each orientation plane is located at the center of its respective slice, and these can be used to reorient the slices for CNC machining, for example.
 
-![brep](img/orientacion-rebanadas.png "Rebanadas reorientadas")
+![brep](img/orientacion-rebanadas.png "Reoriented slices")
